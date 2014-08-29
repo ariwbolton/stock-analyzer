@@ -14,6 +14,7 @@ void getData(Stock & st);
 void printVals(Stock & st);
 void addStock(string & inp);
 void init(string syms[ NUM_STOCKS ]);
+void runner(int & num, string & inp);
 
 int main() {
 	string inp, allSymbols[ NUM_STOCKS ];
@@ -22,27 +23,8 @@ int main() {
 
 	init(allSymbols);
 
-	while(num > 0) {
-
-	    	cout << "Choose an option" << endl
-		     << "0. Exit" << endl
-		     << "1. Track a new stock" << endl
-		     << ">> ";
-
-		cin >> num;
-		cin.get();
-
-		switch(num) {
-		    	case 0:
-				break;
-			case 1:
-				addStock(inp);
-				break;
-			default:
-				break;
-		}			
-
-	}
+	while(num > 0) 
+		runner(num, inp);
 	
 	//getData(MSFT);
 	//printVals(MSFT);
@@ -131,7 +113,6 @@ void addStock(string & inp) {
 	    cout << inp << " added\n\n";
 }
 
-
 void init(string syms[ NUM_STOCKS ]) {
 	ifstream inp("nlisted.txt");
 	string l;
@@ -140,7 +121,27 @@ void init(string syms[ NUM_STOCKS ]) {
 	while(getline(inp, l))
 	    syms[i++] = l;
 
-	cout << i - 1 << " " << syms[i - 1] << endl;
 	inp.close();
-
 }
+
+void runner(int & num, string & inp) {
+
+	cout << "Choose an option" << endl
+	     << "0. Exit" << endl
+	     << "1. Track a new stock" << endl
+	     << ">> ";
+
+	cin >> num;
+	cin.get();
+
+	switch(num) {
+	    	case 0:
+			break;
+		case 1:
+			addStock(inp);
+			break;
+		default:
+			break;
+	}			
+
+} // runner
