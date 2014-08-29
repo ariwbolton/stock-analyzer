@@ -12,19 +12,20 @@ using namespace std;
 
 void getData(Stock & st);
 void printVals(Stock & st);
-void addStock(string & inp);
+void addStock(string & inp, string allStocks[ NUM_STOCKS ], vector<string> & tStocks);
 void init(string syms[ NUM_STOCKS ]);
-void runner(int & num, string & inp);
+void runner(int & num, string & inp, string allStocks[], vector<string> & tStocks);
 
 int main() {
 	string inp, allSymbols[ NUM_STOCKS ];
+	vector<string> tStocks;
 	int num = 10;
 	Stock MSFT(string("MSFT"));
 
 	init(allSymbols);
 
 	while(num > 0) 
-		runner(num, inp);
+		runner(num, inp, allSymbols, tStocks);
 	
 	//getData(MSFT);
 	//printVals(MSFT);
@@ -92,13 +93,14 @@ void printVals(Stock & st) {
 } // printVals
 
 
-void addStock(string & inp) {
+void addStock(string & inp, string allStocks[ NUM_STOCKS ], vector<string> & tStocks) {
     	bool isValid = true;
+	int i;
 
 	cout << "Enter a stock: ";
 	getline(cin, inp);
 
-	for(int i = 0; i < inp.length(); i++) {
+	for(i = 0; i < inp.length(); i++) {
 		if(!isalpha(inp[i])) {
 			isValid = false;
 			cout << "Invalid characters inputted\n\n"; 
@@ -106,11 +108,17 @@ void addStock(string & inp) {
 		}
 	}
 
-	for(int i = 0; i < inp.length(); i++)
+	for(i = 0; i < inp.length(); i++)
 	    inp[i] = toupper(inp[i]);
 
-	if(isValid)
+	for(i = 0; i < NUM_STOCKS && allStocks[i] != inp; i++);
+
+	if(isValid && i < NUM_STOCKS) {
+	    tStocks.push_back(inp);
 	    cout << inp << " added\n\n";
+	} else {
+	    cout << inp << " not found\n\n";
+	}
 }
 
 void init(string syms[ NUM_STOCKS ]) {
@@ -124,7 +132,7 @@ void init(string syms[ NUM_STOCKS ]) {
 	inp.close();
 }
 
-void runner(int & num, string & inp) {
+void runner(int & num, string & inp, string allStocks[], vector<string> & tStocks) {
 
 	cout << "Choose an option" << endl
 	     << "0. Exit" << endl
@@ -138,7 +146,7 @@ void runner(int & num, string & inp) {
 	    	case 0:
 			break;
 		case 1:
-			addStock(inp);
+			addStock(inp, allStocks, tStocks);
 			break;
 		default:
 			break;
