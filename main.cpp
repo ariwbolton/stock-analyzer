@@ -6,16 +6,21 @@
 #include "Stock.h"
 #include <cctype>
 
+#define NUM_STOCKS 2908
+
 using namespace std;
 
-void runner(Stock & st);
+void getData(Stock & st);
 void printVals(Stock & st);
 void addStock(string & inp);
+void init(string syms[ NUM_STOCKS ]);
 
 int main() {
-	string inp;
+	string inp, allSymbols[ NUM_STOCKS ];
 	int num = 10;
 	Stock MSFT(string("MSFT"));
+
+	init(allSymbols);
 
 	while(num > 0) {
 
@@ -39,13 +44,13 @@ int main() {
 
 	}
 	
-	//runner(MSFT);
+	//getData(MSFT);
 	//printVals(MSFT);
 
 	return 0;
 }
 
-void runner(Stock & st) {
+void getData(Stock & st) {
 
 
 	float cl, hi, lo, op;
@@ -93,7 +98,7 @@ void runner(Stock & st) {
 
 	in.close();
 
-} // runner
+} // getData
 
 void printVals(Stock & st) {
 
@@ -124,4 +129,18 @@ void addStock(string & inp) {
 
 	if(isValid)
 	    cout << inp << " added\n\n";
+}
+
+
+void init(string syms[ NUM_STOCKS ]) {
+	ifstream inp("nlisted.txt");
+	string l;
+	int i = 0;
+
+	while(getline(inp, l))
+	    syms[i++] = l;
+
+	cout << i - 1 << " " << syms[i - 1] << endl;
+	inp.close();
+
 }
