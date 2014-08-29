@@ -4,19 +4,43 @@
 #include <fstream>
 #include <string>
 #include "Stock.h"
+#include <cctype>
 
 using namespace std;
 
 void runner(Stock & st);
 void printVals(Stock & st);
+void addStock(string & inp);
 
 int main() {
-
+	string inp;
+	int num = 10;
 	Stock MSFT(string("MSFT"));
 
-	runner(MSFT);
-	printVals(MSFT);
+	while(num > 0) {
 
+	    	cout << "Choose an option" << endl
+		     << "0. Exit" << endl
+		     << "1. Track a new stock" << endl
+		     << ">> ";
+
+		cin >> num;
+		cin.get();
+
+		switch(num) {
+		    	case 0:
+				break;
+			case 1:
+				addStock(inp);
+				break;
+			default:
+				break;
+		}			
+
+	}
+	
+	//runner(MSFT);
+	//printVals(MSFT);
 
 	return 0;
 }
@@ -79,3 +103,25 @@ void printVals(Stock & st) {
 	    cout << vec[i].close << " " << vec[i].high << " " << vec[i].low
 		 << " " << vec[i].open << " " << vec[i].vol << endl;
 } // printVals
+
+
+void addStock(string & inp) {
+    	bool isValid = true;
+
+	cout << "Enter a stock: ";
+	getline(cin, inp);
+
+	for(int i = 0; i < inp.length(); i++) {
+		if(!isalpha(inp[i])) {
+			isValid = false;
+			cout << "Invalid characters inputted\n\n"; 
+			return;
+		}
+	}
+
+	for(int i = 0; i < inp.length(); i++)
+	    inp[i] = toupper(inp[i]);
+
+	if(isValid)
+	    cout << inp << " added\n\n";
+}
