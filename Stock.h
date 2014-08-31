@@ -14,6 +14,7 @@ class Stock {
 	Stock();
 	Stock(std::string inp);
 	~Stock();
+	void computeBB(int days, float vcoeff);
 };
 
 

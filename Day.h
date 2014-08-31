@@ -10,7 +10,14 @@ class Day {
 	float high;
 	float low;
 	int vol;
+	
+	//Indicators
+	float uBB;
+	float lBB;
+	float SMA;
+	float mSTD;
 
+	//Functions
 	Day();
 	Day(float c, float h, float l, float o, int v);
 

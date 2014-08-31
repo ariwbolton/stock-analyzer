@@ -2,4 +2,4 @@
 
 make clean
 make
-./StockProcessor.out
+./StockProcessor.out < MSFTtest.txt

@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <fstream>
+#include <iomanip>
+#include <sstream>
 #include <string>
 #include "Stock.h"
 #include <cctype>
@@ -12,20 +14,35 @@ using namespace std;
 
 void getData(Stock & st);
 void printVals(Stock & st);
-void addStock(string & inp, string allStocks[ NUM_STOCKS ], vector<Stock*> & tStocks);
+Stock* addStock(string & inp, string allSymbols[ NUM_STOCKS ], vector<Stock*> & tStocks);
 void init(string syms[ NUM_STOCKS ]);
-void runner(int & num, string & inp, string allStocks[], vector<Stock*> & tStocks);
+void runner(int & num, string & inp, string allSymbols[], vector<Stock*> & tStocks);
+bool isTracked(string & inp, vector<Stock*> & tStocks);
+Stock* getStock(string sym, vector<Stock*> & tStocks);
+bool untrackStock(string sym, vector<Stock*> & tStocks);
 
 int main() {
 	string inp, allSymbols[ NUM_STOCKS ];
 	vector<Stock*> tStocks;
-	int num = 10;
-
+	int num = 10, i, k;
+	float j;
+	string str("FB");
 	init(allSymbols);
 
-	while(num > 0) 
+	while(num > 10) 
 		runner(num, inp, allSymbols, tStocks);
-	
+
+	for(k = 0; k < NUM_STOCKS; k++) {
+	    cerr << k << endl;
+	    for(i = 5; i < 40; i++) {
+		for(j = 1.5; j < 2.5; j += 0.1) {
+		    addStock(allSymbols[ k ], allSymbols, tStocks)->computeBB(i,j);
+		    untrackStock(allSymbols[ k ], tStocks);
+		}
+	    }
+	}
+
+
 	for(int i = 0; i < tStocks.size(); i++)
 	    delete tStocks[i];
 
@@ -33,7 +50,6 @@ int main() {
 }
 
 void getData(Stock & st) {
-
 
 	float cl, hi, lo, op;
 	int vo, dummy, i;
@@ -90,33 +106,40 @@ void printVals(Stock & st) {
 } // printVals
 
 
-void addStock(string & inp, string allStocks[ NUM_STOCKS ], vector<Stock*> & tStocks) {
+Stock* addStock(string & inp, string allSymbols[ NUM_STOCKS ], vector<Stock*> & tStocks) {
     	bool isValid = true;
 	int i;
-
+	Stock * st = NULL;
+	
+	/*
 	cout << "Enter a stock: ";
 	getline(cin, inp);
-
+*/
 	for(i = 0; i < inp.length(); i++) {
 		if(!isalpha(inp[i])) {
 			isValid = false;
 			cout << "Invalid characters inputted\n\n"; 
-			return;
+			return st;
 		}
 	}
 
 	for(i = 0; i < inp.length(); i++)
 	    inp[i] = toupper(inp[i]);
 
-	for(i = 0; i < NUM_STOCKS && allStocks[i] != inp; i++);
+	for(i = 0; i < NUM_STOCKS && allSymbols[i] != inp; i++);
 
 	if(isValid && i < NUM_STOCKS) {
-	    tStocks.push_back(new Stock(inp));
+	    st = new Stock(inp);    
+	    tStocks.push_back(st);
 	    getData(*(tStocks[tStocks.size() - 1]));
 	    cout << inp << " added\n\n";
+	    return st;
 	} else {
 	    cout << inp << " not found\n\n";
+	    return st;
 	}
+
+	return st;
 }
 
 void init(string syms[ NUM_STOCKS ]) {
@@ -130,13 +153,14 @@ void init(string syms[ NUM_STOCKS ]) {
 	inp.close();
 }
 
-void runner(int & num, string & inp, string allStocks[], vector<Stock*> & tStocks) {
+void runner(int & num, string & inp, string allSymbols[], vector<Stock*> & tStocks) {
 	int i;
 
 	cout << "Choose an option" << endl
 	     << "0. Exit" << endl
 	     << "1. Track a new stock" << endl
 	     << "2. Print a stock's value for the last year" << endl
+	     << "3. Compute Bollinger Bands" << endl
 	     << ">> ";
 
 	cin >> num;
@@ -146,22 +170,79 @@ void runner(int & num, string & inp, string allStocks[], vector<Stock*> & tStock
 	    	case 0:
 			break;
 		case 1:
-			addStock(inp, allStocks, tStocks);
+			addStock(inp, allSymbols, tStocks);
 			break;
 		case 2:
 			cout << "\nEnter a stock: ";
 			getline(cin, inp);
-			for(i = 0; i < tStocks.size() && tStocks[i]->name != inp; i++);
 
-			if(i < tStocks.size()) {
+			if(isTracked(inp, tStocks)) {
 			    cout << endl;
+			    for(i = 0; tStocks[i]->name != inp; i++);
 			    printVals(*(tStocks[i]));
 			    cout << endl;
 			} else {
 			    cout << "Stock is untracked\n";
 			}
+			break;
+		case 3:
+			cout << "\nEnter a stock: ";
+			getline(cin, inp);
+
+			if(isTracked(inp, tStocks))
+			    (getStock(inp, tStocks))->computeBB(20,2);
+			else
+			    cout << "Stock is untracked\n";
+			break;
+			    
 		default:
 			break;
 	}			
 
 } // runner
+
+bool isTracked(string & inp, vector<Stock*> & tStocks) {
+    int i;
+
+    for(i = 0; i < inp.length(); i++)
+	inp[i] = toupper(inp[i]);
+
+    for(i = 0; i < tStocks.size() && tStocks[i]->name != inp; i++);
+
+    if(i < tStocks.size()) {
+	return true;
+    } else {
+	return false;
+    }
+
+} //isTracked
+
+bool isValidSymbol(string inp) {
+
+    return false;
+} //isValidSymbol
+
+Stock* getStock(string sym, vector<Stock*> & tStocks) {
+    int i;
+
+    for(i = 0; i < tStocks.size() && tStocks[i]->name != sym; i++);
+
+    if(i == tStocks.size())
+	return NULL;
+    else
+	return tStocks[i];
+
+    return NULL;
+}
+
+bool untrackStock(string sym, vector<Stock*> & tStocks) {
+    int i;
+
+    for(i = 0; tStocks[i]->name != sym && i < tStocks.size(); i++);
+
+    delete tStocks[i];
+
+    tStocks.erase(tStocks.begin() + i);
+
+    return true;
+}
